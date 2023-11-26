@@ -1,0 +1,19 @@
+FIRfilter:
+  magnitude_init: null
+  n_frequency_bins: 1000
+compressor:
+  attack_init: 1.0e-07
+  downsample_factor: 2.0
+  makeup_init: 0.0
+  ratio_init: 30.0
+  release_init: 0.001
+  sr: 16000
+  threshold_init: -10.0
+distortion:
+  distortion_threshold_init: 20.0
+filtered_noise:
+  initial_bias_init: null
+  magnitude_init: null
+  n_frequency_bins: 1000
+n_frequencies: 1000
+sampling_rate: 16000

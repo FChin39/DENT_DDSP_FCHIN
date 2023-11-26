@@ -1,26 +1,20 @@
-import tensorflow as tf
-import tensorflow as tf
-# physical_devices = tf.config.experimental.list_physical_devices('GPU')
-# if len(physical_devices) > 0:
-#     tf.config.experimental.set_memory_growth(physical_devices[2], True)
-device = "1"
 import os
-import time
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]=device
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+import tensorflow as tf
 
-devices = tf.config.list_physical_devices('GPU')
-try:
-    # tf.config.experimental.set_memory_growth(devices[0], True)
-    # tf.config.experimental.set_memory_growth(devices[1], True)
-    tf.config.experimental.set_memory_growth(devices[int(device)], True)
-    # tf.config.experimental.set_memory_growth(devices[3], True)
+physical_devices = tf.config.list_physical_devices('GPU')
 
-    print("Success in setting memory growth")
-except:
-    print("Failed to set memory growth, invalid device or cannot modify virtual devices once initialized.")
+if physical_devices:
+    try:
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
+        print("Success in setting memory growth")
+    except RuntimeError as e:
+        print(f"Failed to set memory growth: {e}")
+else:
+    print("No GPU devices found.")
 
 
 from datetime import datetime
@@ -94,11 +88,10 @@ if __name__=="__main__":
 	batch_loss_train = tf.keras.metrics.Mean(name='batch_loss_train')
 	batch_loss_valid = tf.keras.metrics.Mean(name='batch_loss_valid')
 
+	checkpoint_path = "./checkpoints/11_25_2023_00_35_28_train0.8,1.0_sr16000_len10"
+
 	train_log_dir = checkpoint_path + '/train'
 	val_log_dir = checkpoint_path + '/val'
-
-
-
 
 
 	train_summary_writer = tf.summary.create_file_writer(train_log_dir)

@@ -176,7 +176,7 @@ class audio_reader():
 			self.dbfs = self.get_loudness()
 		else:
 			if sample_rate is not None and sample_rate!=8000:
-				self.sample_array, self.sample_rate = librosa.load(audio_file_path, sample_rate)
+				self.sample_array, self.sample_rate = librosa.load(audio_file_path, sr=sample_rate)
 			else:
 				self.sample_array, self.sample_rate = sf.read(audio_file_path) #pengding change
 			self.dbfs = self.get_loudness()
@@ -238,27 +238,37 @@ def process_one_pair(clean_path, noisy_path, sr):
 
 	return final_file
 
-def process_dirs_of_files(parent_dir , sr):
-	final_lst = []
-	clean_paths = sorted(glob.glob(f"{parent_dir}/clean/*.wav"))
-	noisy_paths = sorted(glob.glob(f"{parent_dir}/noisy/*.wav"))
+def process_dirs_of_files(parent_dir, sr):
+    final_lst = []
+    clean_paths = sorted(glob.glob(os.path.join(parent_dir, "clean", "*.wav")))
+    noisy_paths = sorted(glob.glob(os.path.join(parent_dir, "noisy", "*.wav")))
 
-	for clean_path, noisy_path in zip(clean_paths, noisy_paths):
-		assert clean_path.split("/")[-1].split("_")[0] == noisy_path.split("/")[-1].split("_")[0]
-		output = process_one_pair(clean_path, noisy_path, sr)
-		if output is not None:
-			final_lst.append(output)
-	return final_lst
+    for clean_path, noisy_path in zip(clean_paths, noisy_paths):
+        # 获取文件名（不包含扩展名）
+        clean_filename = os.path.splitext(os.path.basename(clean_path))[0]
+        noisy_filename = os.path.splitext(os.path.basename(noisy_path))[0]
+
+        # 检查文件名是否匹配（假设文件名格式是 '文件名_clean.wav' 和 '文件名_noisy.wav'）
+        assert clean_filename.split("_")[0] == noisy_filename.split("_")[0], f"文件名不匹配: {clean_path} 和 {noisy_path}"
+
+        # 处理每一对音频文件
+        output = process_one_pair(clean_path, noisy_path, sr)
+        if output is not None:
+            final_lst.append(output)
+
+    return final_lst
+
+
 if __name__ == '__main__':
 	
 	SEED = 265
-	sr = 8000
+	sr = 16000
 	random.seed(SEED)
 	if_get_status = False
 	ratio_threshold = (0.8, 1.0)
 	energy_thresh = 50
 	total_train_amount = 10
-	parent_dir = "RATs_data_mid"
+	parent_dir = "data"
 	
 	#convert everything into 1s chunks
 	final_lst = process_dirs_of_files(parent_dir, sr = sr)
@@ -272,7 +282,5 @@ if __name__ == '__main__':
 	#select data based on amount & ratio threshold
 	training_npy, val_npy = select_data(input_total_data = final_lst_np,ratio_threshold = ratio_threshold,  total_amount =total_train_amount, sr = sr, energy_thresh= energy_thresh)
 
-	np.save(f"{parent_dir}/rats_small_train_thd{ratio_threshold[0]},{ratio_threshold[1]}_sr{sr}_len{len(training_npy)}.npy", training_npy)
-	np.save(f"{parent_dir}/rats_small_valid_thd{ratio_threshold[0]},{ratio_threshold[1]}_sr{sr}_len{len(val_npy)}.npy", val_npy)
-
-	
+	np.save(f"{parent_dir}/train{ratio_threshold[0]},{ratio_threshold[1]}_sr{sr}_len{len(training_npy)}.npy", training_npy)
+	np.save(f"{parent_dir}/valid{ratio_threshold[0]},{ratio_threshold[1]}_sr{sr}_len{len(val_npy)}.npy", val_npy)

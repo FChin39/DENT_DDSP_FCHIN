@@ -41,8 +41,8 @@ if __name__=="__main__":
 
 	#config
 
-	ckpt_path = "checkpoints/03_07_2022_13_43_10_rats_small_train_thd0.8,1.0_sr8000_len10"
-	step = "ckpt-132"
+	ckpt_path = "./checkpoints/11_25_2023_00_35_28_train0.8,1.0_sr16000_len10"
+	step = "ckpt-256"
 
 	with open (ckpt_path+'/training.yaml', 'r') as f:
 		cfg = yaml.safe_load(f)
@@ -50,9 +50,9 @@ if __name__=="__main__":
 		cfg_model = yaml.safe_load(f)
 
 	noise_adjustment = 4.0
-	data_dir = r"C:\Users\qinxi\Desktop\workspace\sample_rate_adjuster\output_folder"
+	data_dir = r"C:\Users\qinxi\Desktop\workspace\DENT_DDSP_FCHIN\test_data\clean"
 	# new_dir = "results_folder/"+ckpt_path.split("/")[-1]+"/"+step
-	new_dir = "results_folder/"+ckpt_path.split("/")[-1]+"/"+step +f"-{str(noise_adjustment)}"
+	new_dir = "./test_data/noisy/"+ckpt_path.split("/")[-1]+"/"+step +f"-{str(noise_adjustment)}"
 
 	if not os.path.exists(new_dir):
 		os.makedirs(new_dir)
@@ -114,8 +114,12 @@ if __name__=="__main__":
 
 		inp_audio = audio.sample_array[np.newaxis, :]
 
+		print("new_dir:", new_dir)
+
 		# 构建输出文件路径
 		out_name = os.path.join(new_dir, "/".join(clean_path.split("/")[-4:]))
+
+		print("out_name:", out_name)
 		
 		if not os.path.exists(os.path.dirname(out_name)):
 			os.makedirs(os.path.dirname(out_name))

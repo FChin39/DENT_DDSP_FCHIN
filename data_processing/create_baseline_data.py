@@ -5,9 +5,9 @@ import numpy as np
 # training_datas = glob.glob("/home/emrys/G/zixun/espnet/egs2/asr_rl/dump_clean_8k/raw/org/data_src_train_8k/data/**/*.wav")
 training_datas = glob.glob("/home/emrys/G/zixun/espnet/egs2/asr_rl/clean/*.wav")
 
-method = "g726"
+# method = "g726"
 # method = "add_rats_noise"
-# method = "codec2"
+method = "codec2"
 rat_noise, _ = sf.read("/home/emrys/G/zixun/espnet/egs2/asr_rl/dump_raw/rats_noise.wav")
 sr = 8000
 def augment(audio_path, method, outname=None):
